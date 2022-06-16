@@ -19,7 +19,11 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
-import rootReducer from './redux/reducers';
+import { MainButton } from '../components/MainButton';
+import { StatsButton } from '../components/StatsButton';
+import rootReducer from '../redux/reducers';
+import { Playground } from './Playground';
+import { HeaderSection } from './Playground/Header';
 
 const store = createStore(rootReducer);
 
@@ -28,7 +32,7 @@ const App = () => {
     <Provider store={store}>
       <SafeAreaView>
         <View style={styles.container}>
-          <Text style={styles.sectionContainer}>Hello</Text>
+          <HeaderSection />
         </View>
       </SafeAreaView>
     </Provider>
