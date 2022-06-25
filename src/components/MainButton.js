@@ -2,9 +2,10 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import menuImg from "../../assets/icons/menu.png";
-export const MainButton = () => {
+export const MainButton = (props) => {
+    console.log("MainButton Props:::", props.submit)
     return (
-        <TouchableOpacity style={styles.container} onPress={() => console.log("Test button")}>
+        <TouchableOpacity style={styles.container} onPress={() => props.submit(true)}>
             <LinearGradient colors={['#44cac9', '#3c85d6']} style={styles.linearGradient}>
                 <Image source={menuImg} style={styles.img} />
                 <Text style={styles.text}>Menu</Text>

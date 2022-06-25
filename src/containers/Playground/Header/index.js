@@ -3,11 +3,11 @@ import {View, Text, StyleSheet} from 'react-native';
 import {MainButton} from '../../../components/MainButton';
 import {StatsButton} from '../../../components/StatsButton';
 import LinearGradient from 'react-native-linear-gradient';
-export const HeaderSection = () => {
+export const HeaderSection = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
-        <MainButton />
+        <MainButton submit={props.submit}/>
         <StatsButton />
       </View>
 

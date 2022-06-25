@@ -7,7 +7,7 @@ export const StatsButton = () => {
         <TouchableOpacity style={styles.container} onPress={() => console.log("Test button")}>
             <LinearGradient colors={['#58dcac', '#39ba93']} style={styles.linearGradient}>
                 <Image source={statsImg} style={styles.img} />
-                <Text style={styles.text}>Menu</Text>
+                <Text style={styles.text}>Stats</Text>
             </LinearGradient>
         </TouchableOpacity>
     )
