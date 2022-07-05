@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  ImageBackground,
   TouchableOpacity,
 } from 'react-native';
 import sortImg from '../../../../assets/icons/sort-drop.png';
@@ -37,6 +38,8 @@ export const Board = () => {
   const [nextImg, setNextImg] = useState(
     tempImgNum[Math.floor(Math.random() * 9)],
   );
+  const [started, setStarted] = useState(false);
+  const [tiles, setTiles] = useState([[], [], [], [], [], [], []]);
   const countArry = [1, 1, 1, 1, 1];
 
   const handleClickBoard = () => {
@@ -46,6 +49,45 @@ export const Board = () => {
       setLevelCount(5);
     }
     setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
+  };
+  const gameStart = () => {
+    if (started) {
+      console.log('started', tiles);
+      setTiles([[], [], [], [], [], [], []]);
+      randomStart();
+    } else {
+      setStarted(true);
+      randomStart();
+    }
+  };
+  const randomStart = () => {
+    let _tiles = [[], [], [], [], [], [], []];
+    [0, 1, 2, 3, 4, 5, 6, 7].map(item => {
+      console.log('item', item);
+      const randVal = Math.floor(Math.random() * 7);
+      _tiles[randVal].push(tempImgNum[Math.floor(Math.random() * 9)]);
+    });
+    setTiles([..._tiles]);
+  };
+  const touchCol = e => {
+    console.log('Touched', e, tiles);
+    let _tiles = [];
+    if (started) {
+      tiles.map((tilecol, i) => {
+        if (i === e) {
+          _tiles.push([...tilecol, nextImg]);
+        } else {
+          _tiles.push([...tilecol]);
+        }
+      });
+      setTiles([..._tiles]);
+      setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
+      if (levelCount > 1) {
+        setLevelCount(levelCount - 1);
+      } else {
+        setLevelCount(5);
+      }
+    }
   };
   return (
     <View style={styles.container}>
@@ -68,15 +110,23 @@ export const Board = () => {
         <Image source={nextImg} />
       </View>
       {/* Board */}
-      <TouchableOpacity
-        style={styles.mainBoard}
-        onPress={() => handleClickBoard()}>
-        <Image
-          source={mainBoardImg}
-          style={styles.imgBoard}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
+      <ImageBackground
+        source={mainBoardImg}
+        resizeMode="cover"
+        style={styles.mainBoard}>
+        {tiles.map((tilecol, i) => (
+          <TouchableOpacity onPress={() => touchCol(i)} style={styles.touchCol}>
+            {tilecol.map((tile, j) => (
+              <Image
+                source={tile}
+                key={j}
+                style={styles.tileItem}
+                resizeMode="contain"
+              />
+            ))}
+          </TouchableOpacity>
+        ))}
+      </ImageBackground>
       <TouchableOpacity
         style={{
           backgroundColor: 'green',
@@ -86,11 +136,18 @@ export const Board = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          marginTop: 30,
         }}
-        onPress={() => handleClickBoard()}>
-        <Text style={{fontSize: 20, color: '#fff', fontWeight: '700'}}>
-          Click
-        </Text>
+        onPress={() => gameStart()}>
+        {started ? (
+          <Text style={{fontSize: 20, color: '#fff', fontWeight: '700'}}>
+            Restart
+          </Text>
+        ) : (
+          <Text style={{fontSize: 20, color: '#fff', fontWeight: '700'}}>
+            Start
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -147,7 +204,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     width: '100%',
+    height: 358,
+    paddingBottom: 4,
     marginTop: -25,
+  },
+  touchCol: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    height: '100%',
+    width: (Dimensions.get('window').width - 50) / 7,
+  },
+  tileItem: {
+    width: 50,
+    height: 50,
+    marginTop: 0,
   },
   imgBoard: {
     alignItems: 'flex-start',
