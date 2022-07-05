@@ -65,7 +65,18 @@ export const Board = () => {
     [0, 1, 2, 3, 4, 5, 6, 7].map(item => {
       console.log('item', item);
       const randVal = Math.floor(Math.random() * 7);
-      _tiles[randVal].push(tempImgNum[Math.floor(Math.random() * 9)]);
+      _tiles[randVal].push(tempImgNum[Math.floor(Math.random() * 7)]);
+    });
+    setTiles([..._tiles]);
+    setLevelCount(5);
+  };
+  const addLocks = () => {
+    console.log('Add Locks');
+    let _tiles = [[], [], [], [], [], [], []];
+    [0, 1, 2, 3, 4, 5, 6].map(item => {
+      console.log('Item Lock col', item);
+      _tiles[item] = tiles[item];
+      _tiles[item].unshift(tempImgNum[8]);
     });
     setTiles([..._tiles]);
   };
@@ -85,6 +96,9 @@ export const Board = () => {
       if (levelCount > 1) {
         setLevelCount(levelCount - 1);
       } else {
+        setTimeout(() => {
+          addLocks();
+        }, 2000);
         setLevelCount(5);
       }
     }
