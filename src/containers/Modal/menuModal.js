@@ -1,21 +1,29 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image,ImageBackground} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ImageBackground,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
-import playImg from "../../../assets/icons/play-again.png";
-import shareImg from "../../../assets/icons/share.png";
-import menuImg from "../../../assets/icons/main-menu.png";
-import backImg from "../../../assets/icons/modal-background.png"
+import playImg from '../../../assets/icons/play-again.png';
+import shareImg from '../../../assets/icons/share.png';
+import menuImg from '../../../assets/icons/main-menu.png';
+import backImg from '../../../assets/icons/modal-background.png';
 
 export const MenuModal = props => {
   return (
     <View>
       <Modal
         isVisible={props.isVisible}
-        onBackdropPress={() => props.submit(false)}
-        >
-          <ImageBackground source={backImg} resizeMode="cover" style={styles.image}>
-       
+        onBackdropPress={() => props.submit(false)}>
+        <ImageBackground
+          source={backImg}
+          resizeMode="cover"
+          style={styles.image}>
           <View style={styles.container}>
             <Text style={styles.highScore}>New High Score!</Text>
             <Text style={styles.score}>$304,505</Text>
@@ -62,8 +70,8 @@ const styles = StyleSheet.create({
   },
   button: {
     display: 'flex',
-    alignItems: "center",
-   
+    alignItems: 'center',
+
     marginTop: 20,
   },
   buttonText: {

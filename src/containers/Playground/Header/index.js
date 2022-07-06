@@ -3,22 +3,29 @@ import {View, Text, StyleSheet} from 'react-native';
 import {MainButton} from '../../../components/MainButton';
 import {StatsButton} from '../../../components/StatsButton';
 import LinearGradient from 'react-native-linear-gradient';
-export const HeaderSection = (props) => {
+export const HeaderSection = props => {
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
-        <MainButton submit={props.submit}/>
+        <MainButton submit={props.submit} />
         <StatsButton />
       </View>
-
       <View style={styles.currentScores}>
         <LinearGradient
           colors={['#262626', '#383838']}
           style={styles.linearGradient}>
           <Text style={styles.levelText}>Level : 10</Text>
           <View style={styles.divider}></View>
-          <View style={{display: "flex", flexDirection: "row"}}>
-            <Text style={{...styles.scoreText, fontSize: 12, marginTop: 4, marginRight: 3}}>$</Text>
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            <Text
+              style={{
+                ...styles.scoreText,
+                fontSize: 12,
+                marginTop: 4,
+                marginRight: 3,
+              }}>
+              $
+            </Text>
             <Text style={styles.scoreText}>304,505</Text>
           </View>
         </LinearGradient>
@@ -28,11 +35,18 @@ export const HeaderSection = (props) => {
           colors={['#262626', '#383838']}
           style={styles.linearGradient}>
           <Text style={styles.levelText}>High Score</Text>
-          <View style={{display: "flex", flexDirection: "row"}}>
-            <Text style={{...styles.scoreText, fontSize: 12, marginTop: 4, marginRight: 3}}>$</Text>
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            <Text
+              style={{
+                ...styles.scoreText,
+                fontSize: 12,
+                marginTop: 4,
+                marginRight: 3,
+              }}>
+              $
+            </Text>
             <Text style={styles.scoreText}>255.340</Text>
           </View>
-          
         </LinearGradient>
       </View>
     </View>

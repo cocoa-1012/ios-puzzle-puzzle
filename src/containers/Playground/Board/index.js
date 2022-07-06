@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
 import sortImg from '../../../../assets/icons/sort-drop.png';
 import mainBoardImg from '../../../../assets/icons/main-board.png';
 import InsetShadow from 'react-native-inset-shadow';
-import reducers from '../../../redux/reducers';
 import numImg1 from '../../../../assets/icons/number-1.png';
 import numImg2 from '../../../../assets/icons/number-2.png';
 import numImg3 from '../../../../assets/icons/number-3.png';
@@ -33,23 +32,16 @@ const tempImgNum = [
   numImg9,
 ];
 
-export const Board = () => {
+export const Board = props => {
   const [levelCount, setLevelCount] = useState(5);
   const [nextImg, setNextImg] = useState(
     tempImgNum[Math.floor(Math.random() * 9)],
   );
   const [started, setStarted] = useState(false);
+  const [isOver, setIsOver] = useState(false);
   const [tiles, setTiles] = useState([[], [], [], [], [], [], []]);
   const countArry = [1, 1, 1, 1, 1];
 
-  const handleClickBoard = () => {
-    if (levelCount > 1) {
-      setLevelCount(levelCount - 1);
-    } else {
-      setLevelCount(5);
-    }
-    setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
-  };
   const gameStart = () => {
     if (started) {
       console.log('started', tiles);
@@ -63,46 +55,54 @@ export const Board = () => {
   const randomStart = () => {
     let _tiles = [[], [], [], [], [], [], []];
     [0, 1, 2, 3, 4, 5, 6, 7].map(item => {
-      console.log('item', item);
       const randVal = Math.floor(Math.random() * 7);
+      console.log('item', item, randVal);
       _tiles[randVal].push(tempImgNum[Math.floor(Math.random() * 7)]);
     });
     setTiles([..._tiles]);
     setLevelCount(5);
   };
-  const addLocks = () => {
-    console.log('Add Locks');
-    let _tiles = [[], [], [], [], [], [], []];
-    [0, 1, 2, 3, 4, 5, 6].map(item => {
-      console.log('Item Lock col', item);
-      _tiles[item] = tiles[item];
-      _tiles[item].unshift(tempImgNum[8]);
-    });
-    setTiles([..._tiles]);
-  };
+
   const touchCol = e => {
-    console.log('Touched', e, tiles);
+    // console.log('Touched', e, tiles);
     let _tiles = [];
     if (started) {
+      console.log('Tiles', tiles);
+      let idleCol = 0;
       tiles.map((tilecol, i) => {
         if (i === e) {
-          _tiles.push([...tilecol, nextImg]);
+          console.log('_tiles, tilecol', _tiles.length, tilecol.length, i);
+          if (tilecol?.length < 7) {
+            _tiles.push([...tilecol, nextImg]);
+          } else {
+            _tiles.push([...tilecol]);
+            idleCol = 1;
+          }
         } else {
           _tiles.push([...tilecol]);
         }
       });
-      setTiles([..._tiles]);
-      setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
-      if (levelCount > 1) {
-        setLevelCount(levelCount - 1);
-      } else {
-        setTimeout(() => {
-          addLocks();
-        }, 2000);
-        setLevelCount(5);
+      if (idleCol === 0) {
+        if (levelCount > 1) {
+          setLevelCount(levelCount - 1);
+          setTiles([..._tiles]);
+        } else {
+          setLevelCount(5);
+          [0, 1, 2, 3, 4, 5, 6].map(item => {
+            if (_tiles[item].length < 7) {
+              _tiles[item].unshift(tempImgNum[8]);
+            } else {
+              setStarted(false);
+              props.submit(true);
+            }
+          });
+          setTiles([..._tiles]);
+        }
+        setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
       }
     }
   };
+
   return (
     <View style={styles.container}>
       {/* Counter */}
@@ -141,26 +141,12 @@ export const Board = () => {
           </TouchableOpacity>
         ))}
       </ImageBackground>
-      <TouchableOpacity
-        style={{
-          backgroundColor: 'green',
-          height: 35,
-          width: 120,
-          borderRadius: 30,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: 30,
-        }}
-        onPress={() => gameStart()}>
+      {/* Start Button */}
+      <TouchableOpacity style={styles.startBtn} onPress={() => gameStart()}>
         {started ? (
-          <Text style={{fontSize: 20, color: '#fff', fontWeight: '700'}}>
-            Restart
-          </Text>
+          <Text style={styles.startTxt}>Restart</Text>
         ) : (
-          <Text style={{fontSize: 20, color: '#fff', fontWeight: '700'}}>
-            Start
-          </Text>
+          <Text style={styles.startTxt}>Start</Text>
         )}
       </TouchableOpacity>
     </View>
@@ -239,5 +225,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     margin: 0,
     width: '100%',
+  },
+  startBtn: {
+    backgroundColor: 'green',
+    height: 35,
+    width: 120,
+    borderRadius: 30,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+  },
+  startTxt: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '700',
   },
 });
