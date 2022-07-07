@@ -90,13 +90,17 @@ export const Board = props => {
           setLevelCount(5);
           [0, 1, 2, 3, 4, 5, 6].map(item => {
             if (_tiles[item].length < 7) {
-              _tiles[item].unshift(tempImgNum[8]);
+              setTiles([..._tiles]);
+              setTimeout(() => {
+                _tiles[item].unshift(tempImgNum[8]);
+                setTiles([..._tiles]);
+              }, 1000);
             } else {
               setStarted(false);
               props.submit(true);
+              setTiles([..._tiles]);
             }
           });
-          setTiles([..._tiles]);
         }
         setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
       }
