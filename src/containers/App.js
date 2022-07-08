@@ -32,15 +32,26 @@ const store = createStore(rootReducer);
 const App = () => {
   const [isModalVisible, setModalVisible] = useState(true);
   const [currentLevel, setLevel] = useState(1);
+  const [currentScore, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(100);
   return (
     <Provider store={store}>
       <SafeAreaView>
         <View style={styles.container}>
-          <HeaderSection submit={setModalVisible} level={currentLevel} />
+          <HeaderSection
+            submit={setModalVisible}
+            level={currentLevel}
+            score={currentScore}
+            highScore={highScore}
+          />
           <Board
             submit={setModalVisible}
             handleLevel={setLevel}
             level={currentLevel}
+            score={currentScore}
+            highScore={highScore}
+            handleScore={setScore}
+            handleHighScore={setHighScore}
           />
           <Footer />
           <MenuModal isVisible={isModalVisible} submit={setModalVisible} />

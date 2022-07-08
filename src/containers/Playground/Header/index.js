@@ -4,6 +4,9 @@ import {MainButton} from '../../../components/MainButton';
 import {StatsButton} from '../../../components/StatsButton';
 import LinearGradient from 'react-native-linear-gradient';
 export const HeaderSection = props => {
+  const numberWithSep = x => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.buttons}>
@@ -26,7 +29,7 @@ export const HeaderSection = props => {
               }}>
               $
             </Text>
-            <Text style={styles.scoreText}>304,505</Text>
+            <Text style={styles.scoreText}>{numberWithSep(props.score)}</Text>
           </View>
         </LinearGradient>
       </View>
@@ -45,7 +48,9 @@ export const HeaderSection = props => {
               }}>
               $
             </Text>
-            <Text style={styles.scoreText}>255.340</Text>
+            <Text style={styles.scoreText}>
+              {numberWithSep(props.highScore)}
+            </Text>
           </View>
         </LinearGradient>
       </View>
@@ -102,5 +107,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
     fontFamily: 'Quicksand',
+  },
+  sep: {
+    display: 'flex',
+    padding: 10,
   },
 });

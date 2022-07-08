@@ -42,14 +42,15 @@ export const Board = props => {
   const countArry = [1, 1, 1, 1, 1];
 
   const gameStart = () => {
+    props.handleLevel(1);
+    props.handleScore(0);
     if (started) {
       console.log('started', tiles);
       setTiles([[], [], [], [], [], [], []]);
-      randomStart();
     } else {
       setStarted(true);
-      randomStart();
     }
+    randomStart();
   };
   const randomStart = () => {
     let _tiles = [[], [], [], [], [], [], []];
@@ -94,10 +95,15 @@ export const Board = props => {
                 _tiles[item].unshift(tempImgNum[8]);
                 setTiles([..._tiles]);
                 props.handleLevel(props.level + 1);
+                props.handleScore(props.score + 700);
               }, 1000);
             } else {
+              props.handleHighScore(
+                props.score > props.highScore ? props.score : props.highScore,
+              );
               setStarted(false);
               props.submit(true);
+
               setTiles([..._tiles]);
             }
           });
