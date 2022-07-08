@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import sortImg from '../../../../assets/icons/sort-drop.png';
 import mainBoardImg from '../../../../assets/icons/main-board.png';
-import InsetShadow from 'react-native-inset-shadow';
+// import InsetShadow from 'react-native-inset-shadow';
 import numImg1 from '../../../../assets/icons/number-1.png';
 import numImg2 from '../../../../assets/icons/number-2.png';
 import numImg3 from '../../../../assets/icons/number-3.png';
@@ -38,7 +38,6 @@ export const Board = props => {
     tempImgNum[Math.floor(Math.random() * 9)],
   );
   const [started, setStarted] = useState(false);
-  const [isOver, setIsOver] = useState(false);
   const [tiles, setTiles] = useState([[], [], [], [], [], [], []]);
   const countArry = [1, 1, 1, 1, 1];
 
@@ -94,6 +93,7 @@ export const Board = props => {
               setTimeout(() => {
                 _tiles[item].unshift(tempImgNum[8]);
                 setTiles([..._tiles]);
+                props.handleLevel(props.level + 1);
               }, 1000);
             } else {
               setStarted(false);
@@ -117,7 +117,7 @@ export const Board = props => {
             {i < levelCount ? (
               <Image source={sortImg} style={styles.img} />
             ) : (
-              <Text></Text>
+              <Text />
             )}
           </View>
         ))}

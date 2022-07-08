@@ -14,8 +14,8 @@ export const HeaderSection = props => {
         <LinearGradient
           colors={['#262626', '#383838']}
           style={styles.linearGradient}>
-          <Text style={styles.levelText}>Level : 10</Text>
-          <View style={styles.divider}></View>
+          <Text style={styles.levelText}>Level : {props.level}</Text>
+          <View style={styles.divider} />
           <View style={{display: 'flex', flexDirection: 'row'}}>
             <Text
               style={{

@@ -31,12 +31,17 @@ const store = createStore(rootReducer);
 
 const App = () => {
   const [isModalVisible, setModalVisible] = useState(true);
+  const [currentLevel, setLevel] = useState(1);
   return (
     <Provider store={store}>
       <SafeAreaView>
         <View style={styles.container}>
-          <HeaderSection submit={setModalVisible} />
-          <Board submit={setModalVisible} />
+          <HeaderSection submit={setModalVisible} level={currentLevel} />
+          <Board
+            submit={setModalVisible}
+            handleLevel={setLevel}
+            level={currentLevel}
+          />
           <Footer />
           <MenuModal isVisible={isModalVisible} submit={setModalVisible} />
         </View>
