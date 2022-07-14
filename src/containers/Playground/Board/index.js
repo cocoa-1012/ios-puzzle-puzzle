@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import numImg6 from '../../../../assets/icons/number-6.png';
 import numImg7 from '../../../../assets/icons/number-7.png';
 import numImg8 from '../../../../assets/icons/lock-alt.png';
 import numImg9 from '../../../../assets/icons/lock.png';
-const tempImgNum = [
+const imageArray = [
   numImg1,
   numImg2,
   numImg3,
@@ -34,83 +34,162 @@ const tempImgNum = [
 
 export const Board = props => {
   const [levelCount, setLevelCount] = useState(5);
-  const [nextImg, setNextImg] = useState(
-    tempImgNum[Math.floor(Math.random() * 9)],
-  );
+  const [nextImg, setNextImg] = useState(Math.floor(Math.random() * 9));
   const [started, setStarted] = useState(false);
   const [tiles, setTiles] = useState([[], [], [], [], [], [], []]);
   const countArry = [1, 1, 1, 1, 1];
+  const BLOCK = 10;
+
+  useEffect(() => {
+    const func = async () => {
+      if (!started) return;
+      await new Promise(r => setTimeout(r, 500));
+      let _tiles = [...tiles];
+      const bChanged = operateTiles(_tiles);
+      if (bChanged) {
+        setTiles([..._tiles]);
+      } else {
+        if (levelCount > 1) {
+          setLevelCount(levelCount - 1);
+        } else {
+          setLevelCount(5);
+          let bEnd = false;
+          [0, 1, 2, 3, 4, 5, 6].map(item => {
+            if (_tiles[item].length < 7) {
+              _tiles[item].unshift(8);
+            } else {
+              bEnd = true;
+            }
+          });
+          if (bEnd) {
+            props.handleHighScore(
+              props.score > props.highScore ? props.score : props.highScore,
+            );
+            setStarted(false);
+            props.submit(true);
+          } else {
+            props.handleLevel(props.level + 1);
+            props.handleScore(props.score + 700);
+          }
+          setTiles([..._tiles]);
+        }
+      }
+    };
+    func();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiles]);
 
   const gameStart = () => {
     props.handleLevel(1);
     props.handleScore(0);
-    if (started) {
-      console.log('started', tiles);
-      setTiles([[], [], [], [], [], [], []]);
-    } else {
-      setStarted(true);
-    }
+    // if (started) {
+    //   console.log('started', tiles);
+    //   setTiles([[], [], [], [], [], [], []]);
+    // } else {
+    setStarted(true);
+    // }
     randomStart();
   };
+
   const randomStart = () => {
     let _tiles = [[], [], [], [], [], [], []];
     [0, 1, 2, 3, 4, 5, 6, 7].map(item => {
       const randVal = Math.floor(Math.random() * 7);
       console.log('item', item, randVal);
-      _tiles[randVal].push(tempImgNum[Math.floor(Math.random() * 7)]);
+      _tiles[randVal].push(Math.floor(Math.random() * 7));
     });
     setTiles([..._tiles]);
     setLevelCount(5);
   };
 
+  const connectCnt = (tile, i, j, ii, jj) => {
+    const len = 7;
+    let ci = i;
+    let cj = j;
+    let cnt = 0;
+    while (ci >= 0 && cj >= 0 && cj < tile[ci].length) {
+      ci -= ii;
+      cj -= jj;
+      cnt++;
+    }
+    ci = i + ii;
+    cj = j + jj;
+    while (ci < len && cj < tile[ci].length) {
+      ci += ii;
+      cj += jj;
+      cnt++;
+    }
+    return cnt - 1;
+  };
+
+  const operateStone = (tile, i, j) => {
+    const len = 7;
+    const ii = [1, -1, 0, 0];
+    const jj = [0, 0, 1, -1];
+    for (let t = 0; t < 4; t++) {
+      const ni = i + ii[t];
+      const nj = j + jj[t];
+      if (ni >= 0 && ni < len && nj >= 0 && nj < len) {
+        if (tile[ni][nj] === 8) tile[ni][nj] = 7;
+        else if (tile[ni][nj] === 7)
+          tile[ni][nj] = Math.floor(Math.random() * 7);
+      }
+    }
+  };
+
+  const operateTiles = tile => {
+    const len = 7;
+    let bChanged = false;
+    console.log('Operate Tile', tile);
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < tile[i].length; j++) {
+        const rowCnt = connectCnt(tile, i, j, 1, 0);
+        const colCnt = connectCnt(tile, i, j, 0, 1);
+        if (
+          tile[i][j] % BLOCK < 7 &&
+          (tile[i][j] % BLOCK === rowCnt || tile[i][j] % BLOCK === colCnt)
+        ) {
+          bChanged = true;
+          tile[i][j] += BLOCK;
+          operateStone(tile, i, j); // Block should be ...
+        }
+      }
+    }
+    for (let i = 0; i < len; i++) {
+      let j = 0;
+      while (j < tile[i].length) {
+        if (tile[i][j] >= BLOCK * 6) {
+          tile[i].splice(j, 1);
+        } else {
+          j++;
+        }
+      }
+    }
+    return bChanged;
+  };
+
   const touchCol = e => {
     // console.log('Touched', e, tiles);
+    if (!started) return;
+
+    console.log('Tiles', tiles);
     let _tiles = [];
-    if (started) {
-      console.log('Tiles', tiles);
-      let idleCol = 0;
-      tiles.map((tilecol, i) => {
-        if (i === e) {
-          console.log('_tiles, tilecol', _tiles.length, tilecol.length, i);
-          if (tilecol?.length < 7) {
-            _tiles.push([...tilecol, nextImg]);
-          } else {
-            _tiles.push([...tilecol]);
-            idleCol = 1;
-          }
+
+    tiles.map((tilecol, i) => {
+      if (i === e) {
+        console.log('_tiles, tilecol', _tiles.length, tilecol.length, i);
+        if (tilecol?.length < 7) {
+          _tiles.push([...tilecol, nextImg]);
         } else {
           _tiles.push([...tilecol]);
         }
-      });
-      if (idleCol === 0) {
-        if (levelCount > 1) {
-          setLevelCount(levelCount - 1);
-          setTiles([..._tiles]);
-        } else {
-          setLevelCount(5);
-          [0, 1, 2, 3, 4, 5, 6].map(item => {
-            if (_tiles[item].length < 7) {
-              setTiles([..._tiles]);
-              setTimeout(() => {
-                _tiles[item].unshift(tempImgNum[8]);
-                setTiles([..._tiles]);
-                props.handleLevel(props.level + 1);
-                props.handleScore(props.score + 700);
-              }, 1000);
-            } else {
-              props.handleHighScore(
-                props.score > props.highScore ? props.score : props.highScore,
-              );
-              setStarted(false);
-              props.submit(true);
-
-              setTiles([..._tiles]);
-            }
-          });
-        }
-        setNextImg(tempImgNum[Math.floor(Math.random() * 9)]);
+      } else {
+        _tiles.push([...tilecol]);
       }
-    }
+    });
+
+    setTiles([..._tiles]);
+    setNextImg(Math.floor(Math.random() * 9));
   };
 
   return (
@@ -131,7 +210,7 @@ export const Board = props => {
       </View>
       {/* Pattern Number */}
       <View style={styles.patternNumber}>
-        <Image source={nextImg} />
+        <Image source={imageArray[nextImg]} />
       </View>
       {/* Board */}
       <ImageBackground
@@ -142,9 +221,13 @@ export const Board = props => {
           <TouchableOpacity onPress={() => touchCol(i)} style={styles.touchCol}>
             {tilecol.map((tile, j) => (
               <Image
-                source={tile}
+                source={imageArray[tile % BLOCK]}
                 key={j}
-                style={styles.tileItem}
+                style={
+                  Math.floor(tile / BLOCK) % 2 === 1
+                    ? styles.tileItemRed
+                    : styles.tileItem
+                }
                 resizeMode="contain"
               />
             ))}
@@ -230,6 +313,12 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginTop: 0,
+  },
+  tileItemRed: {
+    width: 50,
+    height: 50,
+    marginTop: 0,
+    backgroundColor: 'red',
   },
   imgBoard: {
     alignItems: 'flex-start',
